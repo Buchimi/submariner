@@ -21,8 +21,12 @@ def crashcourse(python_module:str):
     """
     ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
     
-        
+@app.command()
+def describe():
+    """
+    Describe a function or class in a python module and how it could be used
+    """ 
+    raise NotImplementedError()
 
 if __name__ == "__main__":
-    
     app()
