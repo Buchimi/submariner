@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pydantic import BaseModel, Field
 from rich.panel import Panel
 from rich.console import Group, Console
+from rich.syntax import Syntax
 console = Console()
 
 @dataclass
@@ -20,7 +21,8 @@ class CrashCourse(BaseModel):
         In your keypoints, favor writing succint keypoints (3-4) and favor adding code and terminal commands.
         Things to note:
         don't use single backticks (`) for code or terminal commands, only use triple backticks (```)
-        You are primarily concerned about python packages"""
+        You are primarily concerned about python packages
+        Rely using code comments for explanation / documentation"""
 
     def __str__(self):
         return f"""
@@ -43,7 +45,8 @@ class CrashCourse(BaseModel):
     
     def printCodeBlocks(self) -> None:
         codeblocks : LanguageCodePair = self.getCodeBlocks()
-        groups : Group = Group(*[Panel(codeblock.code, title=codeblock.lang) for codeblock in codeblocks])
+        # codeblocks_with_syntax = [Syntax(codeblock.code, languagecodeblock.lang) for codeblock in codeblocks]
+        groups : Group = Group(*[Panel(Syntax(codeblock.code, codeblock.lang, theme="nord"), title=codeblock.lang) for codeblock in codeblocks])
         panel : Panel = Panel(groups, title="Code Blocks")
         console.print(panel)
    
