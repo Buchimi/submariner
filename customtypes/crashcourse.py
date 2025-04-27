@@ -45,7 +45,6 @@ class CrashCourse(BaseModel):
     
     def printCodeBlocks(self) -> None:
         codeblocks : LanguageCodePair = self.getCodeBlocks()
-        # codeblocks_with_syntax = [Syntax(codeblock.code, languagecodeblock.lang) for codeblock in codeblocks]
         groups : Group = Group(*[Panel(Syntax(codeblock.code, codeblock.lang, theme="nord"), title=codeblock.lang) for codeblock in codeblocks])
         panel : Panel = Panel(groups, title="Code Blocks")
         console.print(panel)
