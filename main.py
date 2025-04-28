@@ -7,6 +7,7 @@ from customtypes.crashcourse import CrashCourse
 import importlib
 from pypi import PyPi
 from rich.console import Console
+from commands import CommandRunner, PipInstall
 
 app = typer.Typer()
 Env()
@@ -35,9 +36,20 @@ def deepdive(module:str):
     try:
         module = importlib.import_module(module)
     except ModuleNotFoundError:
+        # Do some rearranging
+        fully_qualified_module_name = module
+        module_split = module.split(".")
+        module = module_split[0]
+
+        # now instead of a module like os.path, it's just os
         if PyPi(module).has_module():
             console.log("Pypi has this module")
-            
+            clirunner = CommandRunner()
+            clirunner.run_command(PipInstall(module))
+            module = importlib.import_module(module)
+            console.log("Module imported")
+            print(module)
+
         else:
             # Genai fallback
             raise NotImplementedError(f"Module {module} not found")
