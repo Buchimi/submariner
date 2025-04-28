@@ -1,7 +1,7 @@
 import abc
 from abc import ABC, abstractmethod
 import subprocess
-from virtualenv import VirtualEnvironment
+from .virtualenv import VirtualEnvironment
 
 class Command(ABC):
     @abstractmethod
