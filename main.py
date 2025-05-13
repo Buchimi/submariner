@@ -49,13 +49,14 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None):
     if use_ai:
         ai.run_main(generate_deepdive_answer(module.prompt(goal)))
     else:
-        if isinstance(module, Module):
-            print(module)
-            for member in module.members():
-                print(member)
-            print(module.submodules())
-        else:
-            print(module)
+        # if isinstance(module, Module):
+        #     print(module)
+        #     for member in module.members():
+        #         print(member)
+        #     print(module.submodules())
+        # else:
+        #     print(module)
+        module.pretty_print()
 
 if __name__ == "__main__":
     app()
