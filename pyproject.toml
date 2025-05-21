@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "submarine"
+version = "0.1"
+description = 'A tool to explore python modules'
+readme = "README.md"
+requires-python = ">=3.8"
+license = 'MIT'
+keywords = []
+authors = [
+  { name = "stormzzy900", email = "stormzzy900@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = ["typer", "dotenv", "rich", "genkit", "genkit-plugin-google-genai"]
+
+[project.scripts]
+submarine = "submarine.main:main"
+
+[project.urls]
+Documentation = "https://github.com/stormzzy900/submarine#readme"
+Issues = "https://github.com/stormzzy900/submarine/issues"
+Source = "https://github.com/stormzzy900/submarine"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/submarine tests}"
+
+[tool.coverage.run]
+source_pkgs = ["submarine", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/submarine/__about__.py",
+]
+
+[tool.coverage.paths]
+submarine = ["src/submarine", "*/submarine/src/submarine"]
+tests = ["tests", "*/submarine/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

@@ -1,12 +1,12 @@
 import typer
-from env import Env
+from .env import Env
 from genkit.ai import Genkit
 from genkit.plugins.google_genai import GoogleAI
 from rich import print
-from customtypes.crashcourse import CrashCourse
+from .customtypes.crashcourse import CrashCourse
 import importlib
 from rich.console import Console
-from interfaces.module import Module
+from .interfaces.module import Module
 
 app = typer.Typer()
 Env()
@@ -58,5 +58,8 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None):
         #     print(module)
         module.pretty_print()
 
-if __name__ == "__main__":
+def main():
     app()
+    
+if __name__ == "__main__":
+    main()
