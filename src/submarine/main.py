@@ -7,6 +7,7 @@ from .customtypes.crashcourse import CrashCourse
 import importlib
 from rich.console import Console
 from .interfaces.module import Module
+from .interfaces.virtualenv import NewVirtualEnvironment
 
 app = typer.Typer()
 Env()
@@ -37,6 +38,9 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None):
     # try to import the module
     module_str_split = module_str.split(".")
     start = 0
+    # create the virtual environment
+    virtual_env = NewVirtualEnvironment(module_str_split[start])
+    virtual_env.enter_env()
     module = Module(module_str_split[start])
     start = 1
     while start < len(module_str_split):
@@ -45,7 +49,7 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None):
         if not isinstance(module, Module):
             break
         start +=1
-    
+
     if use_ai:
         ai.run_main(generate_deepdive_answer(module.prompt(goal)))
     else:

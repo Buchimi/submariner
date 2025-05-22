@@ -56,3 +56,10 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.pyrefly]
+project_includes = ["**/*"]
+project_excludes = [
+    "**/.[!/.]*",
+    "**/*venv/**/*",
+]
