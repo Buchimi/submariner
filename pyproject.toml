@@ -24,7 +24,7 @@ classifiers = [
 dependencies = ["typer", "dotenv", "rich", "genkit", "genkit-plugin-google-genai"]
 
 [project.scripts]
-submarine = "submarine.main:main"
+submarine = "subsub.main:main"
 
 [project.urls]
 Documentation = "https://github.com/stormzzy900/subsub#readme"
@@ -36,19 +36,19 @@ extra-dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/submarine tests}"
+check = "mypy --install-types --non-interactive {args:src/subsub tests}"
 
 [tool.coverage.run]
-source_pkgs = ["submarine", "tests"]
+source_pkgs = ["subsub", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/submarine/__about__.py",
+  "src/subsub/__about__.py",
 ]
 
 [tool.coverage.paths]
-submarine = ["src/submarine", "*/submarine/src/submarine"]
-tests = ["tests", "*/submarine/tests"]
+subsub = ["src/subsub", "*/describe/src/subsub"]
+tests = ["tests", "*/subsub/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
