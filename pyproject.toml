@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "submarine"
+name = "subsub"
 version = "0.1"
 description = 'A tool to explore python modules'
 readme = "README.md"
@@ -27,9 +27,9 @@ dependencies = ["typer", "dotenv", "rich", "genkit", "genkit-plugin-google-genai
 submarine = "submarine.main:main"
 
 [project.urls]
-Documentation = "https://github.com/stormzzy900/submarine#readme"
-Issues = "https://github.com/stormzzy900/submarine/issues"
-Source = "https://github.com/stormzzy900/submarine"
+Documentation = "https://github.com/stormzzy900/subsub#readme"
+Issues = "https://github.com/stormzzy900/subsub/issues"
+Source = "https://github.com/stormzzy900/subsub"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
