@@ -22,7 +22,8 @@ class CrashCourse(BaseModel):
         Things to note:
         don't use single backticks (`) for code or terminal commands, only use triple backticks (```)
         You are primarily concerned about python packages
-        Rely using code comments for explanation / documentation"""
+        Rely using code comments for explanation / documentation
+        Generate crashcourses on how to use the module within python code"""
 
     def __str__(self):
         return f"""
