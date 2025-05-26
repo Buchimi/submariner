@@ -9,7 +9,7 @@ from typing import Type
 import inspect
 
 console = Console()
-class Promptable:
+class Entity:
     def prompt(self, goal: str | None = None) -> str:
         raise NotImplementedError("prompt not implemented")
     
@@ -20,12 +20,12 @@ class Promptable:
         raise NotImplementedError("pretty_print not implemented")
     
     @staticmethod
-    def to_promptable(obj:object) -> "Promptable":
+    def to_entity(obj:object) -> "Entity":
         """
-        This will convert a object to one of the promptable subtypes.
-        TODO: See if this function should be in the promptable class or as a member function of this module
+        This will convert a object to one of the entity subtypes.
+        TODO: See if this function should be in the entity class or as a member function of this module
         """
-        if isinstance(obj, Promptable):
+        if isinstance(obj, Entity):
             return obj
         elif isinstance(obj, FunctionType):
             return Function(obj)
@@ -36,7 +36,7 @@ class Promptable:
         else:
             raise TypeError(f"Entity {obj} is not a module, function or class")
 
-class Function(Promptable):
+class Function(Entity):
     def __init__(self, function:FunctionType) -> None:
         self.function = function
         self.name = function.__name__
@@ -56,7 +56,7 @@ class Function(Promptable):
     def __doc__(self) -> str:
         return self.docstring
 
-class Class(Promptable):
+class Class(Entity):
     def __init__(self, cls:Type) -> None:
         self.cls = cls
         self.name = cls.__name__
@@ -92,7 +92,7 @@ class Class(Promptable):
         signature = Panel(f"{self.name}{self.args}", title="Signature") if self.args else ''
         console.print(*[title, title_description, signature])
 
-class Module(Promptable):
+class Module(Entity):
     def __init__(self, module:str) -> None:
         try:
             self.module = importlib.import_module(module)
@@ -144,15 +144,15 @@ class Module(Promptable):
             raise ValueError(f"Module {module_name} not found")
     
     # Gets an attribute, which is basically a local entity like a class, function or submodule
-    def resolve_attribute(self, attr:str) -> Promptable:
+    def resolve_attribute(self, attr:str) -> Entity:
         if hasattr(self.module, attr):
             entity = getattr(self.module, attr)
-            return Promptable.to_promptable(entity)
+            return Entity.to_entity(entity)
         else:
             members = self.members()
             for member in members:
                 if hasattr(member, attr):
-                    return Promptable.to_promptable(getattr(member, attr))
+                    return Entity.to_entity(getattr(member, attr))
             raise ValueError(f"Entity {attr} not found")
 
     # List of classes in the module
@@ -181,10 +181,10 @@ class Module(Promptable):
         return self.__str__()
     
     def pretty_print(self):
-        def panel_markdown_gen(list_of_promptables: list[str], title: str) -> str:
-            if not list_of_promptables:
+        def panel_markdown_gen(list_of_entities: list[str], title: str) -> str:
+            if not list_of_entities:
                 return None
-            return Panel(Markdown("\n".join([f"- {item}" for item in list_of_promptables])), title=title)
+            return Panel(Markdown("\n".join([f"- {item}" for item in list_of_entities])), title=title)
 
         title = Markdown(f"## {self.module.__name__}\n")
         title_description = Markdown(f"{self.module.__doc__.splitlines()[0] if self.module.__doc__ else ''}\n")
