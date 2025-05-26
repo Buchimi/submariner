@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "subsub"
+name = "submariner"
 version = "0.1"
 description = 'A tool to explore python modules'
 readme = "README.md"
@@ -24,31 +24,31 @@ classifiers = [
 dependencies = ["typer", "dotenv", "rich", "genkit", "genkit-plugin-google-genai"]
 
 [project.scripts]
-submarine = "subsub.main:main"
+submarine = "submariner.main:main"
 
 [project.urls]
-Documentation = "https://github.com/stormzzy900/subsub#readme"
-Issues = "https://github.com/stormzzy900/subsub/issues"
-Source = "https://github.com/stormzzy900/subsub"
+Documentation = "https://github.com/stormzzy900/submariner#readme"
+Issues = "https://github.com/stormzzy900/submariner/issues"
+Source = "https://github.com/stormzzy900/submariner"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/subsub tests}"
+check = "mypy --install-types --non-interactive {args:src/submariner tests}"
 
 [tool.coverage.run]
-source_pkgs = ["subsub", "tests"]
+source_pkgs = ["submariner", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/subsub/__about__.py",
+  "src/submariner/__about__.py",
 ]
 
 [tool.coverage.paths]
-subsub = ["src/subsub", "*/describe/src/subsub"]
-tests = ["tests", "*/subsub/tests"]
+submariner = ["src/submariner", "*/describe/src/submariner"]
+tests = ["tests", "*/submariner/tests"]
 
 [tool.coverage.report]
 exclude_lines = [
