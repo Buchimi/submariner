@@ -5,7 +5,6 @@ class PyPi:
             self.module = module.split(".")[0]
         else:
             self.module = module
-        ...
     
     def has_module(self) -> bool:
         url = f"https://pypi.org/pypi/{self.module}/json"
