@@ -2,7 +2,8 @@ import os
 import sys
 from pathlib import Path
 import venv
-from .commands import CommandRunner, InstallSubmarineDebug
+from .commands import CommandRunner, InstallSubmarineDebug, PipList
+import re
 
 def is_in_venv():
     return (hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
@@ -30,24 +31,37 @@ class NewVirtualEnvironment:
 
         self.location = base_path
         self.python = target_path / "bin" / "python"
+        self.target_path = target_path
         if not os.path.isfile(self.python):
             self.python = target_path / 'Scripts' / 'python.exe'
         # self.pip = target_path / "bin" / "pip"
         # if not os.path.isfile(self.pip):
         #     self.pip = target_path / 'Scripts' / 'pip.exe'
+
+        # install submariner conditionally
+        if not self.has_submariner_installed():
+            print("Installing submariner")
+            self.install_submariner()
+            print("Submariner installed")
+
     
     def enter_env(self):
         if not is_in_venv() or not get_env_path().startswith(self.location):
-            # Install submarine. TODO: Conditional install
-            cmd_runner = CommandRunner()
-            cmd_runner.run_command(InstallSubmarineDebug(self.python))
-
             #create
             print("Entering virtual environment, will rerun tool")
             os.execv(self.python, [self.python] + sys.argv)
         else:
-            print("Is already in virtual environment")
+            print(f"Running in virtual environment at {self.target_path}")
     
+    def has_submariner_installed(self) -> bool:
+        cmd_runner = CommandRunner()
+        result = cmd_runner.run_command(PipList(self.python))
+        return bool(re.compile(r'submariner').findall(result))
+        
+    def install_submariner(self) -> bool:
+        cmd_runner = CommandRunner()
+        cmd_runner.run_command(InstallSubmarineDebug(self.python))
+
 if __name__ == "__main__":
 
     virtualenv = VirtualEnvironment()

@@ -1,12 +1,14 @@
 import importlib
 from .commands import PipInstall, CommandRunner
 from .pypi import PyPi
+from .virtualenv import NewVirtualEnvironment
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 from types import ModuleType, FunctionType
 from typing import Type
 import inspect
+
 
 console = Console()
 class Entity:
@@ -107,7 +109,8 @@ class Module(Entity):
             if PyPi(module).has_module():
                 console.log("Pypi has this module")
                 clirunner = CommandRunner()
-                clirunner.run_command(PipInstall(module))
+                python_path = NewVirtualEnvironment(module).python
+                clirunner.run_command(PipInstall(module, python_path))
                 self.module = importlib.import_module(module)
                 console.log("Module imported")
             else:
