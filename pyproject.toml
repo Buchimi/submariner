@@ -21,7 +21,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
-dependencies = ["typer", "dotenv", "rich", "genkit", "genkit-plugin-google-genai"]
+dependencies = ["typer", "dotenv", "rich", "genkit", "genkit-plugin-google-genai", "langchain[google-genai]"]
 
 [project.scripts]
 submarine = "submariner.main:main"

@@ -1,14 +1,14 @@
 import typer
-from .env import Env
+from submariner.env import Env
 from genkit.ai import Genkit
 from genkit.plugins.google_genai import GoogleAI
 from langchain.chat_models import init_chat_model
 from rich import print
-from .customtypes.crashcourse import CrashCourse
+from submariner.customtypes.crashcourse import CrashCourse
 import importlib
 from rich.console import Console
-from .interfaces.module import Module
-from .interfaces.virtualenv import NewVirtualEnvironment
+from submariner.interfaces.module import Module
+from submariner.interfaces.virtualenv import NewVirtualEnvironment
 
 app = typer.Typer()
 Env()
@@ -27,7 +27,10 @@ async def generate_deepdive_answer(prompt:str) :
     print(result.text)
 
 def gen_deepdive_answer(prompt:str):
-    result = new_model.invoke(prompt).content
+    from .customtypes.response import AIResponse
+    model_with_structured_output = new_model.with_structured_output(AIResponse)
+    # print("got here")
+    result = model_with_structured_output.invoke(prompt)
     print(result)
 
 @app.command()
@@ -38,7 +41,7 @@ def spark(python_module:str):
     ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
     
 @app.command()
-def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None):
+def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None, debug:bool = True):
     """
     Describe a function or class in a python module and how it could be used.
     """ 
@@ -56,11 +59,11 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None):
         if not isinstance(module, Module):
             break
         start +=1
-
+    
     if use_ai:
         gen_deepdive_answer(module.prompt(goal))
     else:
-        module.pretty_print()
+        print(module.pretty_print())
 
 def main():
     app()
