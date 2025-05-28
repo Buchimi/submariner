@@ -66,7 +66,10 @@ class Function(Entity):
         prompt_builder.append(f"The function is {str(self)} and it is found in {self.module}.")
         prompt_builder.append(f"Use it's docstring {self.docstring} as guidance")
         return "\n".join(prompt_builder)
-
+    def pretty_print(self):
+        functions = Panel(f"{self.name}:{self.args}",title="Signature")
+        console.print(functions)
+        
 class Class(Entity):
     def __init__(self, cls:Type) -> None:
         self.cls = cls
