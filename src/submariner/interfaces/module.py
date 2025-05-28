@@ -1,22 +1,26 @@
 import importlib
-from .commands import PipInstall, CommandRunner
-from .pypi import PyPi
+from submariner.interfaces.commands import PipInstall, CommandRunner
+from submariner.interfaces.pypi import PyPi
+from submariner.interfaces.virtualenv import NewVirtualEnvironment
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 from types import ModuleType, FunctionType
 from typing import Type
 import inspect
+from abc import abstractmethod, ABC
+
 
 console = Console()
-class Entity:
-    def prompt(self, goal: str | None = None) -> str:
+class Entity(ABC):
+    @abstractmethod
+    def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
         raise NotImplementedError("prompt not implemented")
     
     def _get_all_attributes(self, root) -> list[str]:
         return list(filter( lambda item: (not item.startswith("__")), dir(root)))
 
-    def pretty_print(self) -> None:
+    def pretty_print(self):
         raise NotImplementedError("pretty_print not implemented")
     
     @staticmethod
@@ -55,12 +59,23 @@ class Function(Entity):
 
     def __doc__(self) -> str:
         return self.docstring
-
+    
+    def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
+        prompt_builder = []
+        prompt_builder.append(f"Explain this python function to me. Include examples of how to use it")
+        prompt_builder.append(f"The function is {str(self)} and it is found in {self.module}.")
+        prompt_builder.append(f"Use it's docstring {self.docstring} as guidance")
+        return "\n".join(prompt_builder)
+    def pretty_print(self):
+        functions = Panel(f"{self.name}:{self.args}",title="Signature")
+        console.print(functions)
+        
 class Class(Entity):
     def __init__(self, cls:Type) -> None:
         self.cls = cls
         self.name = cls.__name__
         self.docstring = cls.__doc__
+        self.module = cls.__module__
 
     def __str__(self) -> str:
         return f"{self.name}: {self.docstring.splitlines()[0] if self.docstring else 'No Docs'}"
@@ -81,16 +96,29 @@ class Class(Entity):
     def functions(self) -> list[Function]:
         all_attributes = self._get_all_attributes(self.cls)
         functions =  [Function(getattr(self.cls, item)) for item in all_attributes if isinstance(getattr(self.cls, item), FunctionType)]
+        functions = list(filter(lambda function: not function.name.startswith("_"), functions))
         return functions
     
     def properties(self) -> list[Function]:
+        # Problem: it shows all properties, not just variables
         return self.cls.__dict__.keys()
 
     def pretty_print(self) -> str:
         title = Markdown(f"## {self.name}")
         title_description = Markdown(f"{self.docstring.splitlines()[0] if self.docstring else ''}\n")
         signature = Panel(f"{self.name}{self.args}", title="Signature") if self.args else ''
-        console.print(*[title, title_description, signature])
+        functions = Panel(Markdown("\n".join([f"- {function}" for function in self.functions()])), title="Functions") if self.functions() else ''
+        #attributes = Panel(Markdown("\n".join([f"- {attribute}" for attribute in self.properties()])), title="Attributes") if self.properties() else ''
+        console.print(*[title, title_description, signature, functions, 
+        #attributes
+        ])
+    
+    def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
+        prompt_builder = []
+        prompt_builder.append(f"Explain this python class to me {str(self)}. Include examples of how to use it")
+        prompt_builder.append(f"The args of the class's invocation call is {self.args}. The properties are {self.properties()}.")
+        prompt_builder.append(f"The class is found in {self.module} and some of it's functions are {self.functions()}.")
+        return "\n".join(prompt_builder)
 
 class Module(Entity):
     def __init__(self, module:str) -> None:
@@ -107,7 +135,8 @@ class Module(Entity):
             if PyPi(module).has_module():
                 console.log("Pypi has this module")
                 clirunner = CommandRunner()
-                clirunner.run_command(PipInstall(module))
+                python_path = NewVirtualEnvironment(module).python
+                clirunner.run_command(PipInstall(module, python_path))
                 self.module = importlib.import_module(module)
                 console.log("Module imported")
             else:
@@ -201,8 +230,10 @@ class Module(Entity):
         if goal:
             prompt_builder.append(f"""Tell me how the python module: {str(self.module)} could be used to achieve the goal: {goal}""")
         else:
-
             prompt_builder.append(f"""Explain the use of the python module: {str(self.module)}. What it's for and what members I am likely to use""")
+            prompt_builder.append(f"the functions are {str(self.functions())}")
+            prompt_builder.append(f"the classes are {str(self.classes())}")
+            prompt_builder.append(f"the submodules are {str(self.submodules())}")
         if be_brief:
             prompt_builder.append("Be very brief in your analysis, as though you were a cli tool or a programmer with a short attention span")
         
