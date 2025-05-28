@@ -63,7 +63,8 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None, debu
     if use_ai:
         gen_deepdive_answer(module.prompt(goal))
     else:
-        print(module.pretty_print())
+        #TODO: rename
+        module.pretty_print()
 
 def main():
     app()

@@ -194,9 +194,9 @@ class Module(Entity):
         functions = panel_markdown_gen(self.functions(), "Functions")
         classes = panel_markdown_gen(self.classes(), "Classes")
         submodules = panel_markdown_gen(self.submodules(), "Submodules")
-        print_order = [pretty_printtitle, title_description, functions, classes, submodules]
+        print_order = [title, title_description, functions, classes, submodules]
         print_order = [item for item in print_order if item is not None]
-        return print_order
+        console.print(*print_order)
 
 
     def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
@@ -205,9 +205,9 @@ class Module(Entity):
             prompt_builder.append(f"""Tell me how the python module: {str(self.module)} could be used to achieve the goal: {goal}""")
         else:
             prompt_builder.append(f"""Explain the use of the python module: {str(self.module)}. What it's for and what members I am likely to use""")
-            prompt_builder.append(f"the functions are str(self.functions())")
-            prompt_builder.append(f"the classes are str(self.classes())")
-            prompt_builder.append(f"the submodules are str(self.submodules())")
+            prompt_builder.append(f"the functions are {str(self.functions())}")
+            prompt_builder.append(f"the classes are {str(self.classes())}")
+            prompt_builder.append(f"the submodules are {str(self.submodules())}")
         if be_brief:
             prompt_builder.append("Be very brief in your analysis, as though you were a cli tool or a programmer with a short attention span")
         
