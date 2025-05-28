@@ -12,7 +12,7 @@ import inspect
 
 console = Console()
 class Entity:
-    def prompt(self, goal: str | None = None) -> str:
+    def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
         raise NotImplementedError("prompt not implemented")
     
     def _get_all_attributes(self, root) -> list[str]:
@@ -57,12 +57,20 @@ class Function(Entity):
 
     def __doc__(self) -> str:
         return self.docstring
+    
+    def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
+        prompt_builder = []
+        prompt_builder.append(f"Explain this python function to me. Include examples of how to use it")
+        prompt_builder.append(f"The function is {str(self)} and it is found in {self.module}.")
+        prompt_builder.append(f"Use it's docstring {self.docstring} as guidance")
+        return "\n".join(prompt_builder)
 
 class Class(Entity):
     def __init__(self, cls:Type) -> None:
         self.cls = cls
         self.name = cls.__name__
         self.docstring = cls.__doc__
+        self.module = cls.__module__
 
     def __str__(self) -> str:
         return f"{self.name}: {self.docstring.splitlines()[0] if self.docstring else 'No Docs'}"
@@ -93,6 +101,13 @@ class Class(Entity):
         title_description = Markdown(f"{self.docstring.splitlines()[0] if self.docstring else ''}\n")
         signature = Panel(f"{self.name}{self.args}", title="Signature") if self.args else ''
         console.print(*[title, title_description, signature])
+    
+    def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
+        prompt_builder = []
+        prompt_builder.append(f"Explain this python class to me {str(self)}. Include examples of how to use it")
+        prompt_builder.append(f"The args of the class's invocation call is {self.args}. The properties are {self.properties()}.")
+        prompt_builder.append(f"The class is found in {self.module} and some of it's functions are {self.functions()}.")
+        return "\n".join(prompt_builder)
 
 class Module(Entity):
     def __init__(self, module:str) -> None:
