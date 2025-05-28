@@ -8,10 +8,12 @@ from rich.panel import Panel
 from types import ModuleType, FunctionType
 from typing import Type
 import inspect
+from abc import abstractmethod, ABC
 
 
 console = Console()
-class Entity:
+class Entity(ABC):
+    @abstractmethod
     def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
         raise NotImplementedError("prompt not implemented")
     
@@ -91,16 +93,22 @@ class Class(Entity):
     def functions(self) -> list[Function]:
         all_attributes = self._get_all_attributes(self.cls)
         functions =  [Function(getattr(self.cls, item)) for item in all_attributes if isinstance(getattr(self.cls, item), FunctionType)]
+        functions = list(filter(lambda function: not function.name.startswith("_"), functions))
         return functions
     
     def properties(self) -> list[Function]:
+        # Problem: it shows all properties, not just variables
         return self.cls.__dict__.keys()
 
     def pretty_print(self) -> str:
         title = Markdown(f"## {self.name}")
         title_description = Markdown(f"{self.docstring.splitlines()[0] if self.docstring else ''}\n")
         signature = Panel(f"{self.name}{self.args}", title="Signature") if self.args else ''
-        console.print(*[title, title_description, signature])
+        functions = Panel(Markdown("\n".join([f"- {function}" for function in self.functions()])), title="Functions") if self.functions() else ''
+        #attributes = Panel(Markdown("\n".join([f"- {attribute}" for attribute in self.properties()])), title="Attributes") if self.properties() else ''
+        console.print(*[title, title_description, signature, functions, 
+        #attributes
+        ])
     
     def prompt(self, goal: str | None = None, be_brief:bool = True) -> str:
         prompt_builder = []
