@@ -56,7 +56,6 @@ def gen_deepdive_answer(module: Entity):
     result: AIResponse = model_with_structured_output.invoke(prompt)
     # Print
 
-    print(result)
     print_ai_response(result)
 
 @app.command()
