@@ -1,7 +1,4 @@
 on: 
-  push:
-    branches:
-      main
   release:
     types: [published]  # Triggers when a new release is published
   workflow_dispatch:
