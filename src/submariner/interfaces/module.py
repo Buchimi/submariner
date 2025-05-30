@@ -140,8 +140,8 @@ class Module(Entity):
                 self.module = importlib.import_module(module)
                 console.log("Module imported")
             else:
-                # Genai fallback
-                raise NotImplementedError(f"Module {module} not found")
+                # TODO: Genai fallback
+                raise NotImplementedError(f"Module {module} not found and doesn't exist on pypi. Make sure you are using the right name.")
         
     @classmethod
     def _from_module(cls, module:ModuleType):

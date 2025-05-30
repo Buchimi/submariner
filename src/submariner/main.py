@@ -1,44 +1,71 @@
 import typer
 from submariner.env import Env
-from genkit.ai import Genkit
-from genkit.plugins.google_genai import GoogleAI
 from langchain.chat_models import init_chat_model
 from rich import print
 from submariner.customtypes.crashcourse import CrashCourse
 import importlib
 from rich.console import Console
-from submariner.interfaces.module import Module
+from rich.panel import Panel
+from rich.markdown import Markdown
+from rich.console import Group
+from submariner.interfaces.module import Module, Entity
 from submariner.interfaces.virtualenv import NewVirtualEnvironment
+from submariner.customtypes.response import AIResponse, Explanation
 
 app = typer.Typer()
 Env()
-ai = Genkit(plugins=[GoogleAI()], model="googleai/gemini-2.0-flash")
 new_model = init_chat_model(model="gemini-2.0-flash", model_provider="google_genai")
 
 console : Console = Console()
 
-async def generate_answer(prompt:str) :
-    result = await ai.generate(prompt=prompt, output_schema=CrashCourse)
-    cc: CrashCourse =  CrashCourse.model_validate(result.output)
-    cc.printCodeBlocks()
+# async def generate_answer(prompt:str) :
+#     result = await ai.generate(prompt=prompt, output_schema=CrashCourse)
+#     cc: CrashCourse =  CrashCourse.model_validate(result.output)
+#     cc.printCodeBlocks()
 
-async def generate_deepdive_answer(prompt:str) :
-    result = await ai.generate(prompt=prompt, )
-    print(result.text)
 
-def gen_deepdive_answer(prompt:str):
-    from .customtypes.response import AIResponse
+def gen_deepdive_answer(module: Entity):
+    def print_ai_response(response: AIResponse):
+        # classes 
+        units: list[list[Explanation]] = [response.classes, response.functions, response.subpackages]
+        names: list[str] = ["Classes", "Functions", "Subpackages"]
+        summary = []
+        for funcs, name in zip(units, names):
+            aggregation = []
+            if not funcs:
+                continue
+            for func in funcs:
+                
+                # can either be a class, function or subpackage
+                code_examples = []
+                for example in func.examples:
+                    code_examples.append(Panel(f"```{example.code}```", title="Code Example"))
+                examples_group = Group(*code_examples)
+                aggregation.append(
+                    Group(
+                        Markdown(f"## {func.name}\n {func.use}"),
+                        examples_group,
+                    )
+                )
+            summary.append(Panel(Group(*aggregation), title=name))
+
+        print(Group(*summary))
+        
+    prompt = module.prompt()
     model_with_structured_output = new_model.with_structured_output(AIResponse)
-    # print("got here")
-    result = model_with_structured_output.invoke(prompt)
+    result: AIResponse = model_with_structured_output.invoke(prompt)
+    # Print
+
     print(result)
+    print_ai_response(result)
 
 @app.command()
 def spark(python_module:str):
     """
     Gen a crashcourse.
     """
-    ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
+    raise NotImplementedError("Not implemented yet")
+    # ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
     
 @app.command()
 def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None, debug:bool = True):
@@ -61,7 +88,7 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None, debu
         start +=1
     
     if use_ai:
-        gen_deepdive_answer(module.prompt(goal))
+        gen_deepdive_answer(module)
     else:
         #TODO: rename
         module.pretty_print()
