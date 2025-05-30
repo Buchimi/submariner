@@ -2,6 +2,10 @@ on:
   push:
     branches:
       main
+  release:
+    types: [published]  # Triggers when a new release is published
+  workflow_dispatch:
+
 jobs:
   pypi-publish:
     name: upload release to PyPI+
@@ -13,6 +17,15 @@ jobs:
       id-token: write
     steps:
       # retrieve your distributions here
-
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x' # Or a specific version you support
+      - name: Install Hatch
+        run: pip install hatch
+      - name: Build with Hatch
+        run: hatch build
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
