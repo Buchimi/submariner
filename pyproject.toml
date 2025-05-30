@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "submariner"
-version = "0.1"
+version = "0.1.1"
 description = 'A tool to explore python modules'
 readme = "README.md"
 requires-python = ">=3.8"
 license = 'MIT'
 keywords = []
 authors = [
-  { name = "stormzzy900", email = "stormzzy900@gmail.com" },
+  { name = "Buchimi", email = "stormzzy900@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -27,9 +27,9 @@ dependencies = ["typer", "dotenv", "rich", "langchain[google-genai]"]
 submarine = "submariner.main:main"
 
 [project.urls]
-Documentation = "https://github.com/stormzzy900/submariner#readme"
-Issues = "https://github.com/stormzzy900/submariner/issues"
-Source = "https://github.com/stormzzy900/submariner"
+Documentation = "https://github.com/Buchimi/submariner#readme"
+Issues = "https://github.com/Buchimi/submariner/issues"
+Source = "https://github.com/Buchimi/submariner"
 
 [tool.hatch.envs.types]
 extra-dependencies = [
