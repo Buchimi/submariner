@@ -28,6 +28,7 @@ pip install submariner
 submarine deepdive {python_package}
 ```
 Where python package can be any package of your choice.
+Although the package is called submariner, right now invoking the package requires that you type `submarine`
 
 ## License
 
