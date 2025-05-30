@@ -15,6 +15,7 @@ jobs:
     permissions:
       # IMPORTANT: this permission is mandatory for Trusted Publishing
       id-token: write
+      contents: read
     steps:
       # retrieve your distributions here
       - name: Checkout code
