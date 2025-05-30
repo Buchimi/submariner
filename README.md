@@ -4,6 +4,9 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/submarine.svg)](https://pypi.org/project/submariner)
 
 -----
+# Intro
+Submariner is a tool that lets you explore python packages, submodules, functions and classes, giving you quick visibility on what types are available for import.
+The AI feature provide code examples that fit common usecases of the explored packages.
 
 ## Table of Contents
 
@@ -25,10 +28,14 @@ pip install submariner
 
 ## Usage
 ```console
-submarine deepdive {python_package}
+submarine deepdive {python_package} --use-ai
 ```
 Where python package can be any package of your choice.
 Although the package is called submariner, right now invoking the package requires that you type `submarine`
+
+```console
+submarine --help
+```
 
 ## License
 
