@@ -67,7 +67,7 @@ def spark(python_module:str):
     # ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
     
 @app.command()
-def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None, debug:bool = True):
+def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None,):
     """
     Describe a function or class in a python module and how it could be used.
     """ 

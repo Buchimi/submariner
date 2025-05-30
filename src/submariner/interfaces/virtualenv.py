@@ -2,8 +2,9 @@ import os
 import sys
 from pathlib import Path
 import venv
-from submariner.interfaces.commands import CommandRunner, InstallSubmarineDebug, PipList
+from submariner.interfaces.commands import CommandRunner, InstallSubmariner, PipList
 import re
+from submariner.env import is_debug_mode
 
 def is_in_venv():
     return (hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
@@ -39,10 +40,8 @@ class NewVirtualEnvironment:
         #     self.pip = target_path / 'Scripts' / 'pip.exe'
 
         # install submariner conditionally
-        if not self.has_submariner_installed() or "--debug" in sys.argv:
-            print("Installing submariner")
+        if not self.has_submariner_installed() or is_debug_mode():
             self.install_submariner()
-            print("Submariner installed")
 
     
     def enter_env(self):
@@ -58,9 +57,9 @@ class NewVirtualEnvironment:
         result = cmd_runner.run_command(PipList(self.python))
         return bool(re.compile(r'submariner').findall(result))
         
-    def install_submariner(self) -> bool:
+    def install_submariner(self) -> None:
         cmd_runner = CommandRunner()
-        cmd_runner.run_command(InstallSubmarineDebug(self.python))
+        cmd_runner.run_command(InstallSubmariner(self.python))
 
 if __name__ == "__main__":
 

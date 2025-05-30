@@ -1,6 +1,7 @@
 import abc
 from abc import ABC, abstractmethod
 import subprocess
+from submariner.env import is_debug_mode, is_dev_mode
 
 class Command(ABC):
     @abstractmethod
@@ -18,6 +19,7 @@ class CommandRunner:
     Interface for running sub commands.
     Does not automatically run the command in a virtual environment."""
     def run_command(self, command:Command,) -> str:
+        print(command.get_pre_command_run_log())
         output = subprocess.check_output(command.get_command(), text=True)
         print(command.get_command_run_log())
         return output
@@ -44,17 +46,18 @@ class PipList(Command):
     def get_command(self):
         return [self.python, "-m", "pip", "list"]
 
-class InstallSubmarineDebug(Command):
+class InstallSubmariner(Command):
     def __init__(self, python_path):
         self.python = python_path
     
     def get_command(self):
-        return [self.python, "-m", "pip", "install", "."]
+        if is_debug_mode():
+            return [self.python, "-m", "pip", "install", "."]
+        else:
+            return [self.python, "-m", "pip", "install", "submariner"]
     
     def get_command_run_log(self) -> str:
-        return f"Submariner debug installation successful."
+        return f"Submariner {'debug' if is_debug_mode() else ''} installation successful."
     
     def get_pre_command_run_log(self) -> str:
-        return f"Installing submariner debug at location {self.python}."
-
-
+        return f"Installing submariner {'debug' if is_debug_mode() else ''} from {'pypi' if is_dev_mode() else 'local build' } at location {self.python}."
