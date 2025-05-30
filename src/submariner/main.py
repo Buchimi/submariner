@@ -1,7 +1,5 @@
 import typer
 from submariner.env import Env
-from genkit.ai import Genkit
-from genkit.plugins.google_genai import GoogleAI
 from langchain.chat_models import init_chat_model
 from rich import print
 from submariner.customtypes.crashcourse import CrashCourse
@@ -16,19 +14,15 @@ from submariner.customtypes.response import AIResponse, Explanation
 
 app = typer.Typer()
 Env()
-ai = Genkit(plugins=[GoogleAI()], model="googleai/gemini-2.0-flash")
 new_model = init_chat_model(model="gemini-2.0-flash", model_provider="google_genai")
 
 console : Console = Console()
 
-async def generate_answer(prompt:str) :
-    result = await ai.generate(prompt=prompt, output_schema=CrashCourse)
-    cc: CrashCourse =  CrashCourse.model_validate(result.output)
-    cc.printCodeBlocks()
+# async def generate_answer(prompt:str) :
+#     result = await ai.generate(prompt=prompt, output_schema=CrashCourse)
+#     cc: CrashCourse =  CrashCourse.model_validate(result.output)
+#     cc.printCodeBlocks()
 
-async def generate_deepdive_answer(prompt:str) :
-    result = await ai.generate(prompt=prompt, )
-    print(result.text)
 
 def gen_deepdive_answer(module: Entity):
     def print_ai_response(response: AIResponse):
@@ -70,7 +64,8 @@ def spark(python_module:str):
     """
     Gen a crashcourse.
     """
-    ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
+    raise NotImplementedError("Not implemented yet")
+    # ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
     
 @app.command()
 def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None, debug:bool = True):
