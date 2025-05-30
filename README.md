@@ -10,11 +10,24 @@
 - [Installation](#installation)
 - [License](#license)
 
+## Setup
+Proper use of submariner requires that you have a gemini api key in your environment.
+```
+GOOGLE_API_KEY=YOUR_API_KEY
+```
+New options will be added in the future.
+
 ## Installation
 
 ```console
 pip install submariner
 ```
+
+## Usage
+```console
+submarine deepdive {python_package}
+```
+Where python package can be any package of your choice.
 
 ## License
 
