@@ -11,18 +11,13 @@ from rich.console import Group
 from submariner.interfaces.module import Module, Entity
 from submariner.interfaces.virtualenv import NewVirtualEnvironment
 from submariner.customtypes.response import AIResponse, Explanation
+from submariner.checks import Checks
 
 app = typer.Typer()
 Env()
 new_model = init_chat_model(model="gemini-2.0-flash", model_provider="google_genai")
 
 console : Console = Console()
-
-# async def generate_answer(prompt:str) :
-#     result = await ai.generate(prompt=prompt, output_schema=CrashCourse)
-#     cc: CrashCourse =  CrashCourse.model_validate(result.output)
-#     cc.printCodeBlocks()
-
 
 def gen_deepdive_answer(module: Entity):
     def print_ai_response(response: AIResponse):
@@ -58,14 +53,21 @@ def gen_deepdive_answer(module: Entity):
 
     print_ai_response(result)
 
-@app.command()
 def spark(python_module:str):
     """
     Gen a crashcourse.
     """
     raise NotImplementedError("Not implemented yet")
     # ai.run_main(generate_answer(CrashCourse.prompt(python_module)))
-    
+
+@app.command()
+def status():
+    """
+    Check if the app can run with no problems.
+    """
+    check_runner = Checks()
+    check_runner.check()
+    ...
 @app.command()
 def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None,):
     """
@@ -77,12 +79,13 @@ def deepdive(module_str:str, use_ai: bool = False, goal: str | None = None,):
     # create the virtual environment
     virtual_env = NewVirtualEnvironment(module_str_split[start])
     virtual_env.enter_env()
-    module = Module(module_str_split[start])
+    module: Entity = Module(module_str_split[start])
     start = 1
     while start < len(module_str_split):
         module_str = module_str_split[start]
-        module = module.resolve_attribute(module_str)
-        if not isinstance(module, Module):
+        if isinstance(module, Module):
+            module = module.resolve_attribute(module_str)
+        else:
             break
         start +=1
     
