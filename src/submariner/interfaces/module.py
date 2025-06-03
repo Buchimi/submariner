@@ -152,14 +152,14 @@ class Module(Entity):
         return mod
 
     # Gets a list of all submodules in the module. 
-    def submodules(self) -> list[ModuleType]:
+    def submodules(self) -> list["Module"]:
         all_attributes = self._get_all_attributes(self.module)
         submodules =  [getattr(self.module, item) for item in all_attributes if isinstance(getattr(self.module, item), ModuleType) and getattr(getattr(self.module, item), "__name__").startswith(self.module.__name__)]
         submodules = [sub for sub in submodules if not str(sub).split(".")[1].startswith("_")]
         return [Module._from_module(mod) for mod in submodules]
     
     # Gets a single module. May be deprecated
-    def get_submodule(self, module_name:str) -> ModuleType:
+    def get_submodule(self, module_name:str) -> "Module":
         """
         Simply gets a submodule.
         Consider support for fuzzy search
